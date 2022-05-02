@@ -12,7 +12,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from './style';
 import { booksData } from './booksShortList';
 
-import { Book, BookProps, BooksProps, CartProps } from './App.type';
+import { BookProps, BooksProps, CartProps } from './App.type';
 
 const Books = ({ books, addToCart }: BooksProps) => {
   return (
