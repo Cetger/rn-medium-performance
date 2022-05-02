@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -12,9 +12,9 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from './style';
 import { booksData } from './booksShortList';
 
-import { BookProps, BooksProps, CartProps } from './App.type';
+import { Book as BookType, BookProps, BooksProps, CartProps } from './App.type';
 
-const Books = ({ books, addToCart }: BooksProps) => {
+const Books = React.memo(({ books, addToCart }: BooksProps) => {
   return (
     <>
       {books.map(({ isbn, thumbnailUrl, title, authors, shortDescription }) => (
@@ -29,38 +29,40 @@ const Books = ({ books, addToCart }: BooksProps) => {
       ))}
     </>
   );
-};
+});
 
-const Book = ({
-  thumbnailUrl,
-  title,
-  authors,
-  shortDescription,
-  addToCart
-}: BookProps) => {
-  return (
-    <View style={styles.bookContainer}>
-      <View style={styles.flex}>
-        <Image source={{ uri: thumbnailUrl }} style={styles.image} />
+const Book = React.memo(
+  ({
+    thumbnailUrl,
+    title,
+    authors,
+    shortDescription,
+    addToCart
+  }: BookProps) => {
+    return (
+      <View style={styles.bookContainer}>
+        <View style={styles.flex}>
+          <Image source={{ uri: thumbnailUrl }} style={styles.image} />
+        </View>
+        <View style={styles.bookInfoContainer}>
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.author}>by {authors.map(e => e)}</Text>
+          <Text style={styles.description} numberOfLines={2}>
+            {shortDescription}
+          </Text>
+          {addToCart && (
+            <TouchableOpacity onPress={() => addToCart({ title })}>
+              <View style={styles.buttonContainer}>
+                <Icon name={'home'} size={14} color={'white'} />
+                <Text style={styles.buttonText}>Add To Cart</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
-      <View style={styles.bookInfoContainer}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.author}>by {authors.map(e => e)}</Text>
-        <Text style={styles.description} numberOfLines={2}>
-          {shortDescription}
-        </Text>
-        {addToCart && (
-          <TouchableOpacity onPress={() => addToCart({ title })}>
-            <View style={styles.buttonContainer}>
-              <Icon name={'home'} size={14} color={'white'} />
-              <Text style={styles.buttonText}>Add To Cart</Text>
-            </View>
-          </TouchableOpacity>
-        )}
-      </View>
-    </View>
-  );
-};
+    );
+  }
+);
 
 const Logo = () => {
   return (
@@ -101,13 +103,14 @@ const App = () => {
   const [books] = useState(booksData);
   const [cart, setCart] = useState([]);
 
-  const addToCart = (book: Book) => {
+  const addToCart = useCallback((book: BookType) => {
     setCart(cart => [...cart, book]);
-  };
+  }, []);
 
-  const emptyCart = () => {
+  const emptyCart = useCallback(() => {
     setCart([]);
-  };
+  }, []);
+
   return (
     <SafeAreaView>
       <ScrollView>

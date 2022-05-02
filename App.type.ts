@@ -1,4 +1,4 @@
-interface Book {
+export interface Book {
     isbn?: string,
     title: string,
     thumbnailUrl: string,
